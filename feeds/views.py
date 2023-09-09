@@ -20,7 +20,13 @@ from . models import UserProfile, IGPost, Comment, Like, Message, Room
 def index(request):
     if not request.user.is_authenticated():
         redirect('login')
-    posts = IGPost.objects.order_by('-posted_on')
+
+    # Only return posts from users that are being followed, test this later
+    # for performance / improvement
+    users_followed = request.user.userprofile.following.all()
+    posts = IGPost.objects.filter(
+                user_profile__in=users_followed).order_by('-posted_on')
+
     return render(request, 'feeds/index.html', {
         'posts': posts
     })
@@ -64,6 +70,30 @@ def chat(request, label):
     return render(request, 'feeds/chat.html', context)
 
 
+@login_required
+def new_chat(request):
+    profiles = request.user.userprofile.following.all()
+    context = {
+        'profiles': profiles
+    }
+    return render(request, 'feeds/new_chat.html', context)
+
+
+@login_required
+def new_chat_create(request, username):
+    user_to_message = User.objects.get(username=username)
+    room_label = request.user.username + '_' + user_to_message.username
+
+    try:
+        does_room_exist = Room.objects.get(label=room_label)
+    except:
+        room = Room(label=room_label, receiver=user_to_message,
+                    sender=request.user)
+        room.save()
+
+    return redirect('chat', label=room_label)
+
+
 def signup(request):
     form = UserCreateForm()
 
@@ -71,10 +101,13 @@ def signup(request):
         form = UserCreateForm(request.POST)
         if form.is_valid():
             form.save()
-
             user = User.objects.get(username=request.POST['username'])
             profile = UserProfile(user=user)
             profile.save()
+
+            new_user = authenticate(username=form.cleaned_data['username'],
+                                    password=form.cleaned_data['password1'])
+            login(request, new_user)
             return redirect('index')
 
     return render(request, 'feeds/signup.html', {
@@ -281,12 +314,17 @@ def follow_toggle(request):
     follow_profile = UserProfile.objects.get(pk=follow_profile_pk)
 
     try:
-        if request.POST.get('type') == 'follow':
-            user_profile.following.add(follow_profile)
-        elif request.POST.get('type') == 'unfollow':
-            user_profile.following.remove(follow_profile)
-        user_profile.save()
-        result = 1
+        if user_profile != follow_profile:
+            if request.POST.get('type') == 'follow':
+                user_profile.following.add(follow_profile)
+                follow_profile.followers.add(user_profile)
+            elif request.POST.get('type') == 'unfollow':
+                user_profile.following.remove(follow_profile)
+                follow_profile.followers.remove(user_profile)
+            user_profile.save()
+            result = 1
+        else:
+            result = 0
     except Exception as e:
         print(e)
         result = 0
