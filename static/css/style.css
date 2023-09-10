@@ -1,4 +1,4 @@
-.unfollow-user, .follow-user {
+.unfollow-user, .follow-user, .generic-button {
   font-weight: bold;
   font-size: 15px;
   outline: none; }
@@ -14,12 +14,12 @@
     background-color: #5a9a40;
     border-color: #5a9a40; }
 
-.follow-user {
+.follow-user, .generic-button {
   background-color: #fff;
   border-color: #3897f0;
   color: #3897f0;
   padding: 4px 38px; }
-  .follow-user:hover, .follow-user:active, .follow-user:focus {
+  .follow-user:hover, .follow-user:active, .follow-user:focus, .generic-button:hover, .generic-button:active, .generic-button:focus {
     background-color: #fff;
     border-color: #3897f0;
     color: #3897f0; }
@@ -115,48 +115,131 @@ a:hover {
     .mobile-block {
       display: block; } }
 
-.upload-mobile-link {
-  display: none;
+#messages {
+  max-width: 600px;
+  margin: 0 auto; }
+  #messages .back-button {
+    color: #333;
+    margin-top: 10px;
+    font-size: 20px; }
+
+.message {
+  position: relative; }
+  .message:not(:last-of-type) {
+    border-bottom: 1px solid #ccc; }
+  .message .message-info {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 10px; }
+    .message .message-info .username, .message .message-info .text {
+      margin: 0; }
+    .message .message-info .username {
+      color: #333; }
+    .message .message-info .text {
+      color: #ccc; }
+  .message .timestamp {
+    position: absolute;
+    top: 14px;
+    right: 5px;
+    color: #333; }
+
+.message-sent, .message-received {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 4px;
+  max-width: 75%;
+  margin: 15px auto; }
+
+.message-sent {
+  text-align: right;
+  margin-left: 25%;
+  background: #f3f3f3; }
+
+.message-received {
+  position: relative;
+  margin-right: 25%;
+  margin-top: 30px; }
+  .message-received .sender {
+    position: absolute;
+    top: -18px;
+    left: 0;
+    color: #999;
+    font-size: 12px; }
+
+#chatForm {
   position: fixed;
   bottom: 0;
-  left: 0;
+  right: 0;
   width: 100%;
   text-align: center; }
-  .upload-mobile-link .fa {
-    font-size: 30px;
-    color: #fff;
-    margin-bottom: 15px;
-    height: 55px;
-    width: 55px;
-    background-color: #333;
-    border-radius: 100%;
-    padding-top: 13px; }
-  @media screen and (max-width: 768px) {
-    .upload-mobile-link {
-      display: block; } }
+  #chatForm input {
+    width: 100%;
+    max-width: 600px;
+    padding: 15px;
+    border: none;
+    border-top: 1px solid #ccc; }
+
+.controls {
+  background: #fff; }
+  .controls .right {
+    text-align: right; }
+  .controls a {
+    color: #333; }
+  .controls .new-message {
+    font-size: 25px; }
+    .controls .new-message .fa {
+      padding: 15px; }
+  @media (max-width: 768px) {
+    .controls.desktop {
+      display: none; } }
 
 .navbar {
   background-color: #fff;
   border-bottom-color: #dbdbdb; }
   .navbar .fa {
     font-size: 25px;
-    color: #333; }
+    color: #999999; }
+    .navbar .fa.active {
+      color: #333; }
   .navbar .mobile {
     display: none; }
     .navbar .mobile a, .navbar .mobile a:hover, .navbar .mobile a:focus {
       color: #333; }
     .navbar .mobile .col-xs-3 {
-      text-align: center; }
+      text-align: center;
+      min-height: 50px;
+      width: 20%; }
       .navbar .mobile .col-xs-3 .fa {
         font-size: 25px;
         margin-top: 13px; }
   .navbar .navbar-brand:not(:first-of-type) {
     float: right; }
+  .navbar#mobile-top-nav .item-right {
+    float: right;
+    padding: 15px; }
+  .navbar#mobile-top-nav .back-button .fa, .navbar#mobile-top-nav .new-message .fa {
+    padding: 16px 15px 15px;
+    font-size: 16px; }
+    .navbar#mobile-top-nav .back-button .fa:hover, .navbar#mobile-top-nav .new-message .fa:hover {
+      cursor: pointer; }
+  .navbar#mobile-top-nav .new-message {
+    float: right; }
   @media screen and (max-width: 768px) {
+    .navbar#main-nav {
+      top: initial;
+      bottom: 0;
+      margin: 0;
+      border-top: 1px solid #ccc; }
     .navbar .desktop {
       display: none; }
     .navbar .mobile {
       display: block; } }
+
+.back-button .fa {
+  color: #333;
+  margin-right: 15px; }
+.back-button:hover {
+  cursor: pointer; }
 
 .cards-listing {
   max-width: 600px;
@@ -334,14 +417,15 @@ a:hover {
       border: none;
       outline: none; }
 
+@media screen and (min-width: 768px) {
+  .profile-settings, .auth-form {
+    max-width: 60%;
+    margin: 0 auto;
+    border-top: none; } }
+
 .profile-settings {
   margin-top: 60px;
   border-top: 1px solid #dbdbdb; }
-  @media screen and (min-width: 768px) {
-    .profile-settings {
-      max-width: 60%;
-      margin: 0 auto;
-      border-top: none; } }
 
 .profile-pic-name {
   padding: 30px 0; }
@@ -350,6 +434,13 @@ a:hover {
     font-weight: bold;
     vertical-align: middle;
     margin-left: 32px; }
+
+.auth-form .btn {
+  width: 100%;
+  margin-bottom: 15px;
+  font-weight: bold; }
+.auth-form .help-text {
+  font-size: 12px; }
 
 .profile {
   max-width: 975px;

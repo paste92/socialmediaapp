@@ -80,13 +80,20 @@ class Like(models.Model):
 
 
 class Room(models.Model):
-    name = models.TextField()
     label = models.SlugField(unique=True)
     receiver = models.ForeignKey(User, related_name="receiver")
     sender = models.ForeignKey(User, related_name="sender")
 
+    def get_last_message(self):
+        message = Message.objects.filter(room=self).last()
+        return message.text if message else ""
+
+    def get_last_message_timestamp(self):
+        message = Message.objects.filter(room=self).last()
+        return message.timestamp if message else ""
+
     def __str__(self):
-        return self.name + ': ' + self.label
+        return self.label
 
 
 class Message(models.Model):

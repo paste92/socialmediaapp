@@ -1,4 +1,6 @@
+import re
 from django import template
+from django.core.urlresolvers import reverse, NoReverseMatch
 from feeds.models import Like
 
 register = template.Library()
@@ -33,3 +35,24 @@ def addClass(field, css):
 @register.filter(name='addID')
 def addID(field, css):
    return field.as_widget(attrs={"id":css})
+
+
+@register.filter(name='parse_hashtags')
+def parse_hashtags(field):
+    hashtags_arr = re.findall(r"#(\w+)", field)
+    for hashtag in hashtags_arr:
+        html_tag = "<a href='/explore?hashtag=" + hashtag + "'>#" + hashtag + "</a>"
+        field = field.replace("#" + hashtag, html_tag)
+    return field
+
+
+@register.simple_tag(takes_context=True)
+def active(context, pattern_or_urlname):
+    try:
+        pattern = '^' + reverse(pattern_or_urlname)
+    except NoReverseMatch:
+        pattern = pattern_or_urlname
+    path = context['request'].path
+    if re.search(pattern, path):
+        return 'active'
+    return ''
